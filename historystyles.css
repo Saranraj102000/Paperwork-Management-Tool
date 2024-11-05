@@ -1,0 +1,1115 @@
+<style>
+
+    
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&display=swap');
+
+*{
+
+    margin: 0;
+
+    padding: 0;
+
+    box-sizing: border-box;
+
+    font-family: 'Poppins', sans-serif;
+
+}
+
+
+
+body {
+
+    font-family: Arial, sans-serif;
+
+    background: linear-gradient(45deg, #fdbb2d, #22c1c3, #fdbb2d);
+
+    background-size: 300% 300%;
+
+    color: #333;
+
+    margin: 0;
+
+    padding: 0;
+
+    animation: gradientAnimation 3s ease infinite;
+
+}
+
+
+
+/* @keyframes gradientAnimation {
+
+    0% { background-position: 0% 50%; }
+
+    50% { background-position: 100% 50%; }
+
+    100% { background-position: 0% 50%; }
+
+} */
+
+
+
+
+
+
+
+
+
+h1 {
+
+    background: linear-gradient(45deg, #1b1b1b, #2c3e50); /* Darker, more professional gradient */
+
+    color: #ffffff; /* White text color for contrast */
+
+    padding: 20px 40px; /* Adequate padding for prominence */
+
+    text-align: center; /* Center align text */
+
+    border-radius: 5px; /* Slightly rounded corners for a polished look */
+
+    margin-bottom: 30px; /* Space below the header */
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
+
+    position: relative; /* For positioning pseudo-elements */
+
+    font-family: 'Poppins', sans-serif; /* Modern and clean font */
+
+    font-size: 2.5em; /* Larger font size for emphasis */
+
+    letter-spacing: 1px; /* Subtle letter spacing for a refined look */
+
+}
+
+
+
+
+
+
+
+
+
+h1::before {
+
+    content: ''; /* Empty content for the pseudo-element */
+
+    position: absolute;
+
+    top: 50%; /* Center vertically */
+
+    left: 50%; /* Center horizontally */
+
+    width: 50%; /* Slightly larger than the header */
+
+    height: 60%; /* Slightly larger than the header */
+
+    background: rgba(255, 255, 255, 0.1); /* Light overlay */
+
+    border-radius: 50%; /* Circular shape */
+
+    transform: translate(-50%, -50%); /* Center it */
+
+    z-index: 0; /* Behind the text */
+
+}
+
+
+
+h1 span {
+
+    position: relative; /* For stacking text over the pseudo-element */
+
+    z-index: 1; /* Ensure text is above the pseudo-element */
+
+}
+
+
+
+/* h1:hover {
+
+    background: linear-gradient(135deg, #9013fe, #4a90e2);
+
+    transition: background 0.5s ease;
+
+} */
+
+
+
+h1 a {
+
+    color: #fff;
+
+    text-decoration: underline;
+
+    font-weight: bold;
+
+}
+
+
+
+ul {
+
+    list-style-type: none;
+
+    padding: 0;
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    justify-content: center;
+
+    gap: 20px; /* Add some gap between items */
+
+}
+
+
+
+ul li {
+
+    width: 200px; /* Fixed width for rectangular shape */
+
+    height: 120px; /* Fixed height for rectangular shape */
+
+    margin: 10px;
+
+    text-align: center;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    
+
+    border-radius: 8px; /* Rounded corners */
+
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
+
+    transition: transform 0.3s, background-color 0.3s;
+
+}
+
+
+
+ul li a {
+
+    text-decoration: none;
+
+    color: #fff;
+
+    background-color: #333333;
+
+    padding: 15px;
+
+    display: block;
+
+    width: 100%; /* Full width to fill the rectangle */
+
+    height: 100%; /* Full height to fill the rectangle */
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+
+ul li a:hover {
+
+    transform: scale(1.05); /* Slightly enlarge on hover */
+
+    background-color: #4f4f4f; /* Darker background on hover */
+
+}
+
+
+
+/* Modal Background */
+
+.modal {
+
+    display: none;
+
+    position: fixed;
+
+    z-index: 1000;
+
+    left: 0;
+
+    top: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    overflow: auto;
+
+    background-color: rgba(0, 0, 0, 0.5);
+
+    transition: opacity 0.3s ease;
+
+}
+
+
+
+/* Modal Content */
+
+.modal-content {
+
+    background-color: #fff;
+
+    margin: 5% auto;
+
+    padding: 20px;
+
+    border-radius: 10px;
+
+    width: 80%;
+
+    max-width: 800px;
+
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+    animation: fadeIn 0.3s ease;
+
+}
+
+
+
+/* Modal Header */
+
+.modal-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding-bottom: 15px;
+
+    border-bottom: 1px solid #ddd;
+
+    margin-bottom: 15px;
+
+}
+
+
+
+.modal-header h2 {
+
+    margin: 0;
+
+    font-size: 24px;
+
+    color: #333;
+
+}
+
+
+
+.modal-header .close {
+
+    font-size: 30px;
+
+    color: #666;
+
+    cursor: pointer;
+
+}
+
+
+
+.modal-header .close:hover {
+
+    color: #000;
+
+}
+
+
+
+/* Modal Body */
+
+.modal-body {
+
+    font-size: 16px;
+
+    line-height: 1.5;
+
+    color: #555;
+
+}
+
+
+
+/* Modal Footer */
+
+.modal-footer {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    padding-top: 15px;
+
+    border-top: 1px solid #ddd;
+
+}
+
+
+
+.modal-footer .btn {
+
+    background-color: #007bff;
+
+    color: #fff;
+
+    border: none;
+
+    padding: 10px 20px;
+
+    font-size: 16px;
+
+    border-radius: 5px;
+
+    cursor: pointer;
+
+    transition: background-color 0.3s ease;
+
+}
+
+
+
+.modal-footer .btn:hover {
+
+    background-color: #0056b3;
+
+}
+
+
+
+/* Fade In Animation */
+
+@keyframes fadeIn {
+
+    from { opacity: 0; }
+
+    to { opacity: 1; }
+
+}
+
+
+
+
+
+table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+}
+
+
+
+table, th, td {
+
+    border: 1px solid #ddd;
+
+}
+
+
+
+th, td {
+
+    padding: 12px;
+
+    text-align: left;
+
+}
+
+
+
+th {
+
+    background-color: #f4f4f4;
+
+    color: #333;
+
+}
+
+
+
+/* New Back Button Styles */
+
+.back-button {
+
+    display: inline-block;
+
+    padding: 10px 20px;
+
+    margin: 20px;
+
+    color: #fff;
+
+    background-color: #007BFF;
+
+    border: none;
+
+    border-radius: 5px;
+
+    text-align: center;
+
+    text-decoration: none;
+
+    font-size: 16px;
+
+    transition: background-color 0.3s, transform 0.3s;
+
+    cursor: pointer;
+
+}
+
+
+
+.back-button:hover {
+
+    background-color: #0056b3;
+
+    transform: scale(1.05);
+
+}
+
+
+
+.form-container {
+
+    padding: 20px;
+
+    background: linear-gradient(45deg, #1b1b1b, #2c3e50); /* Darker, more professional gradient */
+
+    border-radius: 15px;
+
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+
+    color: white;
+
+    width: 100%; /* Full width to accommodate different screen sizes */
+
+    max-width: 1250px; /* Limit maximum width */
+
+    margin: 20px auto; /* Center align and add vertical margin */
+
+    display: flex; /* Flexbox for horizontal alignment */
+
+    flex-direction: row; /* Horizontal alignment */
+
+    align-items: center;
+
+    box-sizing: border-box; /* Include padding in width calculation */
+
+}
+
+
+
+/* Style the search and date filter form */
+
+form {
+
+    display: flex;
+
+    flex-direction: row; /* Arrange elements horizontally */
+
+    align-items: center;
+
+    gap: 15px; /* Space between elements */
+
+    width: 100%; /* Full width for responsive design */
+
+    flex-wrap: wrap; /* Allow elements to wrap on smaller screens */
+
+}
+
+
+
+/* Input and label styling */
+
+input[type="text"], input[type="date"] {
+
+    padding: 10px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+
+    color: #333;
+
+    background-color: white;
+
+    flex: 1; /* Allow inputs to grow and shrink */
+
+}
+
+
+
+label {
+
+    font-weight: bold;
+
+    margin-right: 10px;
+
+    font-size: 14px;
+
+    white-space: nowrap; /* Prevent labels from wrapping */
+
+}
+
+
+
+button[type="submit"] {
+
+    padding: 12px;
+
+    background-color: #ff7e67;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-size: 16px;
+
+    transition: background-color 0.3s, transform 0.3s;
+
+}
+
+
+
+button[type="submit"]:hover {
+
+    background-color: #ff5743;
+
+    transform: translateY(-2px);
+
+}
+
+
+
+button[type="submit"]:active {
+
+    transform: translateY(0);
+
+}
+
+/* Reset button styling */
+
+button[type="reset"] {
+
+    padding: 12px;
+
+    background-color: #e0e0e0; /* Light gray color for the reset button */
+
+    color: #333;
+
+    border: none;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-size: 16px;
+
+    transition: background-color 0.3s, transform 0.3s;
+
+    margin-left: 10px; /* Space between submit and reset buttons */
+
+}
+
+
+
+button[type="reset"]:hover {
+
+    background-color: #c0c0c0; /* Darker gray on hover */
+
+    transform: translateY(-2px);
+
+}
+
+
+
+button[type="reset"]:active {
+
+    transform: translateY(0);
+
+}
+
+
+
+/* Container for record cards */
+
+.record-container {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    justify-content: center;
+
+    gap: 20px; /* Space between cards */
+
+    padding: 20px;
+
+}
+
+
+
+/* Individual record card */
+
+.record-card {
+
+    background: #fff;
+
+    border-radius: 8px;
+
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+    width: 300px; /* Fixed width for each card */
+
+    padding: 15px;
+
+    text-align: center;
+
+    transition: transform 0.3s, box-shadow 0.3s;
+
+}
+
+
+
+.record-card:hover {
+
+    transform: translateY(-5px);
+
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+
+}
+
+
+
+.record-header {
+
+    font-size: 18px;
+
+    margin-bottom: 10px;
+
+}
+
+
+
+.record-body p {
+
+    margin: 5px 0;
+
+}
+
+
+
+.info {
+
+    font-weight: bold;
+
+}
+
+
+
+.record-footer {
+
+    margin-top: 15px;
+
+}
+
+
+
+.view-details {
+
+    text-decoration: none;
+
+    color: #007BFF;
+
+    font-weight: bold;
+
+    transition: color 0.3s;
+
+}
+
+
+
+.view-details:hover {
+
+    color: #0056b3;
+
+}
+
+
+
+/* Style for icons */
+
+.edit-record i,
+
+.delete-record i,
+
+.view-history i {
+
+    color: #007bff; /* Blue color for icons */
+
+    font-size: 18px; /* Adjust size as needed */
+
+    transition: color 0.3s, transform 0.3s;
+
+    cursor: pointer;
+
+}
+
+
+
+/* Hover effect for icons */
+
+.edit-record i:hover {
+
+    color: #0056b3; /* Darker blue for hover */
+
+}
+
+
+
+.delete-record i:hover {
+
+    color: #dc3545; /* Red for hover */
+
+    transform: scale(1.1); /* Slightly enlarge icon on hover */
+
+}
+
+
+
+.view-history i:hover {
+
+    color: #28a745; /* Green for hover */
+
+}
+
+
+
+/* Optional: active state if needed */
+
+.edit-record i:active,
+
+.delete-record i:active,
+
+.view-history i:active {
+
+    transform: scale(0.95); /* Slightly shrink icon when clicked */
+
+}
+
+
+
+.record-footer {
+
+    padding: 10px 0;
+
+    border-top: 1px solid #ddd;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+}
+
+
+
+/* Style for icons and links */
+
+.record-footer a {
+
+    color: #007bff; /* Blue color for icons and links */
+
+    font-size: 18px; /* Adjust size as needed */
+
+    text-decoration: none; /* Remove underline */
+
+}
+
+
+
+.record-footer a:hover {
+
+    color: #0056b3; /* Darker blue for hover effect */
+
+}
+
+
+
+.record-footer span {
+
+    color: #333; /* Color for separators */
+
+    font-size: 18px; /* Ensure separators match icon size */
+
+}
+
+
+
+
+
+
+
+
+
+/* Basic modal styles */
+
+.modal {
+
+    display: none; /* Hidden by default */
+
+    position: fixed; /* Stay in place */
+
+    z-index: 1000; /* Sit on top */
+
+    left: 0;
+
+    top: 0;
+
+    width: 100%; /* Full width */
+
+    height: 100%; /* Full height */
+
+    overflow: hidden; /* Disable background scrolling */
+
+    background-color: rgba(0, 0, 0, 0.5); /* Black background with transparency */
+
+}
+
+
+
+/* Modal content */
+
+.modal-content {
+
+    background-color: #fefefe;
+
+    margin: 5% auto;
+
+    padding: 20px;
+
+    border: 1px solid #888;
+
+    width: 60%; /* Width of the modal */
+
+    max-height: 80vh; /* Limit the modal height to 80% of the viewport */
+
+    overflow-y: auto; /* Add vertical scrollbar if content exceeds modal height */
+
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+    border-radius: 8px;
+
+}
+
+
+
+/* Style the close button */
+
+.close {
+
+    color: #aaa;
+
+    float: right;
+
+    font-size: 28px;
+
+    font-weight: bold;
+
+}
+
+
+
+.close:hover, .close:focus {
+
+    color: black;
+
+    text-decoration: none;
+
+    cursor: pointer;
+
+}
+
+
+
+
+
+    /* Scrollable content area */
+
+    .scrollable-content {
+
+        max-height: 50vh; /* Adjust the height for scrollable area */
+
+        overflow-y: auto; /* Enable vertical scroll */
+
+        padding-right: 15px; /* Prevent content from being cut off by scrollbar */
+
+        margin-top: 20px;
+
+    }
+
+
+
+    /* Custom scrollbar styling */
+
+    .scrollable-content::-webkit-scrollbar {
+
+        width: 8px;
+
+    }
+
+
+
+    .scrollable-content::-webkit-scrollbar-thumb {
+
+        background: #888; 
+
+        border-radius: 4px;
+
+    }
+
+
+
+    .scrollable-content::-webkit-scrollbar-thumb:hover {
+
+        background: #555;
+
+    }
+
+
+
+
+
+
+
+
+
+/* Responsive Design */
+
+@media (max-width: 1200px) {
+
+    .form-container {
+
+        padding: 15px;
+
+    }
+
+}
+
+
+
+@media (max-width: 992px) {
+
+    .form-container {
+
+        flex-direction: column; /* Stack elements vertically on smaller screens */
+
+        margin: 20px; /* Adjust margin to fit smaller screens */
+
+    }
+
+
+
+    form {
+
+        flex-direction: column; /* Stack form elements vertically */
+
+        gap: 10px; /* Reduced gap for smaller screens */
+
+    }
+
+
+
+    input[type="text"], input[type="date"], button[type="submit"] {
+
+        width: 100%; /* Full width for form elements */
+
+        margin-bottom: 10px;
+
+    }
+
+}
+
+
+
+@media (max-width: 768px) {
+
+    .form-container {
+
+        margin: 10px; /* Further adjust margin for mobile screens */
+
+    }
+
+}
+
+
+
+/* Responsive Design */
+
+@media (max-width: 992px) {
+
+    ul li {
+
+        width: 180px; /* Adjust width for smaller screens */
+
+        height: 110px; /* Adjust height for smaller screens */
+
+    }
+
+}
+
+
+
+@media (max-width: 768px) {
+
+    ul li {
+
+        width: 150px; /* Adjust width for smaller tablet screens */
+
+        height: 100px; /* Adjust height for smaller tablet screens */
+
+    }
+
+}
+
+
+
+@media (max-width: 576px) {
+
+    ul li {
+
+        width: 100%; /* Full width for mobile screens */
+
+        height: auto; /* Auto height for better fit */
+
+    }
+
+}
+
+</style>

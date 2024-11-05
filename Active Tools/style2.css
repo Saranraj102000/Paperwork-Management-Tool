@@ -1,0 +1,191 @@
+/* Base styling */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    overflow: hidden; /* Remove page scrollbars */
+}
+
+header {
+    width: 100%;
+    background-color: #004080; /* Corporate blue color */
+    color: white;
+    text-align: center;
+    padding: 10px;
+}
+
+h1 {
+    margin: 0;
+}
+
+.logout-btn {
+    position: absolute;
+    right: 20px;
+    top: 10px;
+    color: white;
+    text-decoration: none;
+    background-color: #007bff;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+
+.logout-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Layout and table styling */
+
+.dashboard-container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden; /* Remove scrollbar */
+}
+
+.content-area {
+    width: 100%;
+    padding: 20px;
+    background-color: #fff;
+    overflow-y: auto; /* Keep scrollbar only for content-area */
+}
+
+.table-wrapper {
+    max-height: 400px;
+    overflow-x: auto;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+/* Buttons styling */
+
+button {
+    padding: 8px 12px;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button.edit-btn {
+    background-color: #007bff; /* Corporate blue for edit */
+}
+
+button.remove-btn {
+    background-color: #ff4c4c; /* Distinct red for delete */
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+button.export-btn {
+    padding: 8px 12px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+button.export-btn:hover {
+    background-color: #218838;
+}
+
+button#add-tool-btn {
+    margin-top: 20px;
+    background-color: #28a745;
+    color: white;
+}
+
+button#add-tool-btn:hover {
+    background-color: #218838;
+}
+
+/* Modal styles */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    padding-top: 60px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+    background-color: white;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 60%;
+    text-align: left;
+    border-radius: 10px;
+}
+
+.form-table {
+    width: 100%;
+    border-spacing: 10px;
+}
+
+.form-table td {
+    padding: 5px;
+}
+
+input[type="text"], input[type="number"], input[type="date"], input[type="email"], input[type="url"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+input[type="text"]:focus, input[type="number"]:focus, input[type="date"]:focus, input[type="email"]:focus, input[type="url"]:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+button[type="submit"] {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: black;
+    text-decoration: none;
+}

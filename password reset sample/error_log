@@ -1,0 +1,1 @@
+[09-Oct-2024 20:42:34 UTC] PHP Warning:  mysqli::__construct(): (HY000/1045): Access denied for user 'root'@'localhost' (using password: NO) in /home/mamlom47e23i/public_html/Plc/password reset sample/db.php on line 9
