@@ -268,6 +268,66 @@ $result = $conn->query($sql);
             background-color: #0056b3; /* Darker blue */
             transform: translateY(-2px); /* Slight lift on hover */
         }
+        /* Flex container for Add User and Search functionalities */
+        .top-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            justify-content: space-between; /* Space elements across the container */
+            padding: 10px;
+        }
+
+        /* Add User Button Styling */
+        .add-user-btn {
+            background-color: #4CAF50; /* Green */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .add-user-btn:hover {
+            background-color: #45a049; /* Darker green */
+        }
+
+        /* Search Container Styling */
+        .search-container {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* Search Input Styling */
+        .search-container input[type="text"] {
+            padding: 10px;
+            width: 250px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        /* Search Button Styling */
+        .search-btn {
+            background-color: #007BFF; /* Blue */
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .search-btn:hover {
+            background-color: #0056b3; /* Darker blue */
+        }
+
+        
+
     </style>
 </head>
 
@@ -292,7 +352,7 @@ $result = $conn->query($sql);
                     </a>
                 </li>
                 <li>
-                    <a href="allrecords.php">
+                    <a href="paperworkallrecords.php">
                         <span class="icon">
                             <ion-icon name="time-outline"></ion-icon>
                         </span>
@@ -346,9 +406,55 @@ $result = $conn->query($sql);
                 <div class="user"></div>
             </div>
 
+            <!-- Flex Container for Add User and Search Functionality -->
+            <div class="top-controls">
+
             <!-- Add User Button -->
             <button class="add-user-btn" onclick="openModal()">Add New User</button>
 
+            <?php
+                $searchEmail = isset($_GET['searchEmail']) ? $_GET['searchEmail'] : '';
+
+                $sql = "SELECT * FROM users";
+                if ($searchEmail) {
+                    $sql .= " WHERE email LIKE '%$searchEmail%'";
+                }
+                $result = $conn->query($sql);
+            ?>
+
+
+            <!-- Search User by Email with Inline Styling -->
+            <div class="search-container" style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                <input type="text" id="searchEmail" placeholder="Search by Email" style="padding: 8px; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; width: 250px;" />
+                
+                <!-- Search Button -->
+                <button onclick="searchUser()" style="padding: 8px 16px; background-color: #007BFF; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">Search</button>
+                
+                <!-- Reset Button -->
+                <button onclick="resetSearch()" style="padding: 8px 16px; background-color: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">Reset</button>
+            </div>
+
+
+
+            <script>
+                function searchUser() {
+                    const email = document.getElementById('searchEmail').value;
+                    if (email) {
+                        window.location.href = `?searchEmail=${email}`;
+                    } else {
+                        alert("Please enter an email to search");
+                    }
+                }
+
+                function resetSearch() {
+                    document.getElementById('searchEmail').value = ''; // Clear the search input
+                    window.location.href = '?'; // Reload page without search parameters to show all records
+                }
+
+            </script>
+
+            </div>
+            
             <!-- Modal for Adding New User -->
             <div class="modal" id="userModal">
                 <div class="modal-content">
@@ -383,35 +489,620 @@ $result = $conn->query($sql);
                         <th>Full Name</th>
                         <th>Email</th>
                         <th>Role</th>
+                        <th>Access Control</th> <!-- New Access Control Column -->
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="userTableBody">
-                    <?php
-                    if ($result->num_rows > 0) {
-                        while ($row = $result->fetch_assoc()) {
-                            echo "
-                                <tr>
-                                    <td>{$row['id']}</td>
-                                    <td>{$row['name']}</td>
-                                    <td>{$row['email']}</td>
-                                    <td>{$row['role']}</td>
-                                    <td>
-                                        <a href='javascript:void(0)' onclick='openEditModal({$row['id']})' title='Edit User'>
-                                            <i class='fas fa-edit'></i>
-                                        </a>
-                                        <a href='javascript:void(0)' class='delete-user' data-id='{$row['id']}' title='Delete User' onclick='confirmDelete({$row['id']})'>
-                                            <i class='fas fa-trash-alt'></i>
-                                        </a>
-                                    </td>
-                                </tr>";
-                        }
-                    } else {
-                        echo "<tr><td colspan='5'>No users found</td></tr>";
-                    }
-                    ?>
-                </tbody>
+    <?php
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            echo "
+                <tr>
+                    <td>{$row['id']}</td>
+                    <td>{$row['name']}</td>
+                    <td>{$row['email']}</td>
+                    <td>{$row['role']}</td>
+                    <td>
+                        <button onclick='openAccessModal({$row['id']})' 
+                            style=\"
+                                background-color: #4CAF50;
+                                color: white;
+                                padding: 8px 16px;
+                                border: none;
+                                border-radius: 4px;
+                                cursor: pointer;
+                                font-size: 14px;
+                                font-weight: bold;
+                                margin: 4px 2px;
+                                transition: background-color 0.3s ease, box-shadow 0.3s ease;
+                                box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+                            \"
+                            onmouseover=\"this.style.backgroundColor='#45a049'; this.style.boxShadow='0px 6px 8px rgba(0, 0, 0, 0.15)'\"
+                            onmouseout=\"this.style.backgroundColor='#4CAF50'; this.style.boxShadow='0px 4px 6px rgba(0, 0, 0, 0.1)'\">
+                            Access Control
+                        </button>
+                        <button onclick='openAssignedUsersModal({$row['id']})' 
+                            style=\"
+                                background-color: #2196F3;
+                                color: white;
+                                padding: 8px 16px;
+                                border: none;
+                                border-radius: 4px;
+                                cursor: pointer;
+                                font-size: 14px;
+                                font-weight: bold;
+                                margin: 4px 2px;
+                                transition: background-color 0.3s ease, box-shadow 0.3s ease;
+                                box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+                            \"
+                            onmouseover=\"this.style.backgroundColor='#1e88e5'; this.style.boxShadow='0px 6px 8px rgba(0, 0, 0, 0.15)'\"
+                            onmouseout=\"this.style.backgroundColor='#2196F3'; this.style.boxShadow='0px 4px 6px rgba(0, 0, 0, 0.1)'\">
+                            View Assigned Users
+                        </button>
+                    </td>
+                    <td>
+                        <a href='javascript:void(0)' onclick='openEditModal({$row['id']})' title='Edit User'>
+                            <i class='fas fa-edit'></i>
+                        </a>
+                        <a href='javascript:void(0)' class='delete-user' data-id='{$row['id']}' title='Delete User' onclick='confirmDelete({$row['id']})'>
+                            <i class='fas fa-trash-alt'></i>
+                        </a>
+                    </td>
+                </tr>";
+        }
+    } else {
+        echo "<tr><td colspan='6'>No users found</td></tr>";
+    }
+    ?>
+</tbody>
+
+<style>
+  /* Background Overlay */
+  .modal-backdrop {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.8));
+        backdrop-filter: blur(6px); /* Enhanced blur effect */
+        z-index: 999; /* Below the modal */
+    }
+
+    /* Modal Styling */
+    .modal2 {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 20px;
+        width: 350px;
+        max-width: 90%;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35); /* Deeper shadow */
+        z-index: 1001;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+        transform: translate(-50%, -45%); /* Initial slide-up effect */
+    }
+    .modal2.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(-50%, -50%);
+    }
+
+    .modal2-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .modal2-header h2 {
+        font-size: 1.25rem;
+        color: #333;
+    }
+
+    .modal2-body {
+        max-height: 250px;
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+
+    .btn-close {
+        background: none;
+        border: none;
+        font-size: 20px;
+        cursor: pointer;
+        color: #333;
+        transition: color 0.3s ease;
+    }
+    .btn-close:hover {
+        color: #e74c3c;
+    }
+
+    /* Custom Scrollbar */
+    .modal2-body::-webkit-scrollbar {
+        width: 8px;
+    }
+    .modal2-body::-webkit-scrollbar-thumb {
+        background-color: #bbb;
+        border-radius: 4px;
+    }
+    .modal2-body::-webkit-scrollbar-thumb:hover {
+        background-color: #888;
+    }
+
+    /* Footer with a sticky effect */
+    .modal2-footer {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 15px;
+        padding-top: 10px;
+        border-top: 1px solid #ddd;
+        position: sticky;
+        bottom: 0;
+        background: #fff;
+        z-index: 1;
+    }
+
+    /* Modern Button Styling */
+    .modal2-footer .btn-save {
+        background: linear-gradient(135deg, #4CAF50, #45a049);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        transition: background 0.3s ease, transform 0.2s ease;
+    }
+    .modal2-footer .btn-save:hover {
+        background: linear-gradient(135deg, #45a049, #388e3c);
+        transform: translateY(-2px);
+    }
+</style>
+
+<!-- Background Overlay -->
+<div id="modalBackdrop" class="modal-backdrop"></div>
+
+<!-- Assigned Users Modal -->
+<div id="assignedUsersModal" class="modal2">
+    <div class="modal2-header">
+        <h2>Assigned Users</h2>
+        <button class="btn-close" onclick="closeAssignedUsersModal()">&times;</button>
+    </div>
+    <div class="modal2-body">
+        <ul id="assignedUsersList"></ul>
+    </div>
+    <div class="modal2-footer">
+        <button onclick="saveAccessChanges()" class="btn-save">Save Changes</button>
+    </div>
+</div>
+
+
+<script>
+// Function to open the assigned users modal and show the backdrop
+function openAssignedUsersModal(userId) {
+    // Display modal and backdrop
+    document.getElementById('modalBackdrop').style.display = 'block';
+    document.getElementById('assignedUsersModal').classList.add('show');
+    document.getElementById('assignedUsersModal').dataset.userId = userId;
+
+    // Fetch assigned users for this specific user
+    fetch(`get_assigned_users.php?user_id=${userId}`)
+        .then(response => response.json())
+        .then(data => {
+            let assignedUsersHtml = '';
+            if (data.assignedUsers && data.assignedUsers.length > 0) {
+                data.assignedUsers.forEach(user => {
+                    assignedUsersHtml += `
+                        <li>
+                            <input type="checkbox" class="assigned-user-checkbox" id="assignedUser_${user.id}" value="${user.id}" checked>
+                            <label for="assignedUser_${user.id}">${user.name} (${user.email})</label>
+                        </li>`;
+                });
+            } else {
+                assignedUsersHtml = '<li>No users assigned</li>';
+            }
+            document.getElementById('assignedUsersList').innerHTML = assignedUsersHtml;
+        })
+        .catch(error => console.error('Error fetching assigned users:', error));
+}
+
+// Function to close the assigned users modal and hide the backdrop
+function closeAssignedUsersModal() {
+    document.getElementById('modalBackdrop').style.display = 'none';
+    document.getElementById('assignedUsersModal').classList.remove('show');
+}
+
+// Function to save changes and remove unchecked users from the access list
+function saveAccessChanges() {
+    const userId = document.getElementById('assignedUsersModal').dataset.userId;
+    const checkboxes = document.querySelectorAll('.assigned-user-checkbox');
+    const remainingUserIds = Array.from(checkboxes)
+        .filter(checkbox => checkbox.checked) // Keep only checked users
+        .map(checkbox => checkbox.value); // Get their IDs
+
+    // Send updated access list to the server
+    fetch('update_access_list.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ userId: userId, remainingUserIds: remainingUserIds })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Server response:', data);
+        if (data.success) {
+            alert('Access updated successfully');
+            closeAssignedUsersModal();
+        } else {
+            alert('Error updating access: ' + data.message);
+        }
+    })
+    .catch(error => console.error('Error updating access:', error));
+}
+
+// Close modal when clicking outside of modal content
+document.addEventListener('click', function(event) {
+    const modal = document.getElementById('assignedUsersModal');
+    const backdrop = document.getElementById('modalBackdrop');
+
+    if (event.target === backdrop) {
+        closeAssignedUsersModal();
+    }
+});
+</script>
+
+
             </table>
+
+
+
+            <style>
+        /* Modal Backdrop */
+        .modal1-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        /* Main Modal Style */
+        .modal1 {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90vw;
+            max-width: 500px;
+            max-height: 80vh;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            overflow: hidden;
+            animation: slideIn 0.3s ease-out;
+            box-sizing: border-box;
+        }
+
+        /* Modal Header */
+        .modal1-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal1-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+            margin: 0;
+        }
+
+        .btn-close {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            transition: background-color 0.2s;
+        }
+
+        .btn-close:hover {
+            background-color: #f3f4f6;
+            border-radius: 6px;
+        }
+
+        /* Modal Body */
+        .modal1-body {
+            padding: 1rem;
+            overflow-y: auto;
+            max-height: calc(70vh - 60px); /* Prevents from pushing footer when zoomed out */
+        }
+
+        .user-list {
+            max-height: 40vh;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 0.5rem;
+        }
+
+        .user-item {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end; /* Ensures right alignment */
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #e5e7eb;
+        transition: background-color 0.2s;
+        gap: 0.5rem; /* Space between checkbox and email */
+    }
+
+
+
+    .user-item:last-child {
+        border-bottom: none;
+    }
+
+    .user-item:hover {
+        background-color: #f9fafb;
+    }
+
+    .user-checkbox {
+    margin-right: 0.75rem;
+    width: 16px;
+    height: 16px;
+    transition: transform 0.2s ease; /* Smooth transition for size change */
+}
+
+.user-checkbox:checked {
+    transform: scale(1.2); /* Increases the size by 20% when selected */
+}
+
+
+    .user-email {
+        font-size: 0.875rem;
+        color: #374151;
+    }
+
+    /* Modal Footer */
+    .modal1-footer {
+        display: flex;
+        justify-content: flex-end;
+        padding: 1rem;
+        background-color: white;
+        position: sticky;
+        bottom: 0;
+        border-top: 1px solid #e5e7eb;
+        backdrop-filter: blur(6px);
+        box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
+        z-index: 10;
+    }
+
+    /* Buttons */
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+
+    .btn-cancel {
+        background-color: #f3f4f6;
+        color: #374151;
+    }
+
+    .btn-cancel:hover {
+        background-color: #e5e7eb;
+    }
+
+    .btn-save {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .btn-save:hover {
+        background-color: #45a049;
+    }
+
+    /* Keyframes for Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideIn {
+        from { opacity: 0; transform: translate(-50%, -60%); }
+        to { opacity: 1; transform: translate(-50%, -50%); }
+    }
+
+    /* Media Query for Smaller Screens */
+    @media (max-width: 480px) {
+        .modal {
+            width: 95vw;
+            max-width: 95vw;
+            max-height: 85vh;
+            padding: 1rem;
+        }
+    }
+
+    #userEmailList {
+    text-align: left;
+}
+
+.user-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.user-email {
+    flex: 1;
+    text-align: left;
+}
+
+</style>
+
+
+
+  
+            <!-- Modal Backdrop -->
+<div class="modal1-backdrop" id="modalBackdrop"></div>
+
+<!-- Enhanced Access Control Modal -->
+<div class="modal1" id="accessControlModal">
+  <div class="modal1-header">
+    <h2 class="modal1-title">
+      <span class="modal1-title-icon">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+        </svg>
+      </span>
+      Access Control
+    </h2>
+    <button class="btn-close" onclick="closeAccessModal()">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+      </svg>
+    </button>
+  </div>
+  
+  <div class="modal1-body">
+    <div class="search-container">
+      <input type="text" 
+             class="search-input" 
+             placeholder="Search users..." 
+             onkeyup="filterUsers(this.value)"
+             id="searchInput">
+    </div>
+<br>
+    <div class="user-list" id="userEmailList">
+      <!-- User items will be dynamically populated here -->
+    </div>
+  </div>
+
+  <div class="modal1-footer">
+    <div class="loading-spinner" id="saveSpinner"></div>
+    <button class="btn btn-cancel" onclick="closeAccessModal()">Cancel</button>
+    <button class="btn btn-save" onclick="saveAccessControl()">Save Changes</button>
+  </div>
+</div>
+
+<script>
+  function openAccessModal(userId) {
+    document.getElementById('modalBackdrop').style.display = 'block';
+    document.getElementById('accessControlModal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('accessControlModal').dataset.userId = userId;
+
+    // Fetch and populate users
+    fetch('get_all_users.php')
+        .then(response => response.json())
+        .then(data => {
+            let userListHtml = '';
+            data.users.forEach(user => {
+                userListHtml += `
+                    <div class="user-item">
+                        <label for="user-${user.id}" class="user-email">${user.email}</label>
+                        <input type="checkbox" 
+                               class="user-checkbox" 
+                               id="user-${user.id}" 
+                               value="${user.id}">
+                    </div>`;
+            });
+            document.getElementById('userEmailList').innerHTML = userListHtml;
+        })
+        .catch(error => console.error('Error loading users:', error));
+}
+
+
+  function closeAccessModal() {
+    document.getElementById('modalBackdrop').style.display = 'none';
+    document.getElementById('accessControlModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    document.getElementById('searchInput').value = '';
+    document.getElementById('userEmailList').innerHTML = '';
+  }
+
+  function filterUsers(searchTerm) {
+    const userItems = document.querySelectorAll('.user-item');
+    userItems.forEach(item => {
+      const email = item.querySelector('.user-email').textContent.toLowerCase();
+      const matches = email.includes(searchTerm.toLowerCase());
+      item.style.display = matches ? 'flex' : 'none';
+    });
+  }
+
+  function saveAccessControl() {
+    const spinner = document.getElementById('saveSpinner');
+    spinner.style.display = 'inline-block';
+    
+    const userId = document.getElementById('accessControlModal').dataset.userId;
+    const selectedUserIds = Array.from(document.querySelectorAll('#userEmailList input[type="checkbox"]:checked'))
+      .map(checkbox => checkbox.value);
+
+    fetch('save_access_control.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, selectedUserIds })
+    })
+    .then(response => response.json())
+    .then(data => {
+      spinner.style.display = 'none';
+      if (data.success) {
+        alert('Access control updated successfully!');
+        closeAccessModal();
+      } else {
+        alert('Error updating access control: ' + data.message);
+      }
+    })
+    .catch(error => {
+      spinner.style.display = 'none';
+      console.error('Error saving access control:', error);
+      alert('Error saving access control settings');
+    });
+  }
+
+  // Close modal when clicking outside
+  document.getElementById('modalBackdrop').onclick = function(event) {
+    if (event.target === this) {
+      closeAccessModal();
+    }
+  };
+
+  // Handle escape key
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      closeAccessModal();
+    }
+  });
+</script>
+
+
+
+
 
             <!-- Edit User Modal -->
             <div class="modal" id="editUserModal" style="display: none;">

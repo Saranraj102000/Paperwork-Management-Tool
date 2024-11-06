@@ -1733,74 +1733,47 @@ if ($result->num_rows > 0) {
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 
-    <!-- <script>
-        let inactivityTime = function () {
-            let time;
-            // Reset the timer on user activity
-            window.onload = resetTimer;
-            document.onmousemove = resetTimer;
-            document.onkeypress = resetTimer;
-            document.ontouchstart = resetTimer; // For mobile
+    <script>
+    let inactivityTime = function () {
+        let time;
+        // Reset the timer on user activity
+        window.onload = resetTimer;
+        document.onmousemove = resetTimer;
+        document.onkeypress = resetTimer;
+        document.ontouchstart = resetTimer; // For mobile
 
-            // Capture form data before logging out
-            function captureFormData() {
-                const formData = {}; // Initialize an object to store form data
-                const inputs = document.querySelectorAll('input, textarea, select'); // Select form elements
-                
-                inputs.forEach(input => {
-                    formData[input.name] = input.value; // Store input name and value in the object
+        function logout() {
+            alert("You have been logged out due to inactivity.");
+            // Redirect to the logout or home page
+            window.location.href = 'logout.php'; // Update this URL for your actual logout page
+        }
+
+        function resetTimer() {
+            clearTimeout(time);
+            time = setTimeout(() => {
+                Swal.fire({
+                    title: 'Session Timeout',
+                    text: 'You will be logged out in 60 seconds due to inactivity.',
+                    timer: 60000, // 1 minute (60 seconds)
+                    timerProgressBar: true,
+                    confirmButtonText: 'Stay Logged In',
+                    showCancelButton: true,
+                    cancelButtonText: 'Log Out',
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Reset timer if the user clicks 'Stay Logged In'
+                        resetTimer();
+                    } else {
+                        logout(); // Logout
+                    }
                 });
-                
-                // Send the form data to the server using AJAX
-                fetch('save_data.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData),
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Form data saved:', data);
-                })
-                .catch(error => {
-                    console.error('Error saving form data:', error);
-                });
-            }
+            }, 60 * 1000); // Timeout after 1 minute (60 seconds) of inactivity
+        }
+    };
 
-            function logout() {
-                captureFormData(); // Save data before logging out
-                alert("You have been logged out due to inactivity.");
-                // Redirect to the logout or home page
-                window.location.href = 'logout.php'; // Update this URL for your actual logout page
-            }
+    inactivityTime(); // Start the inactivity timer
+</script>
 
-            function resetTimer() {
-                clearTimeout(time);
-                time = setTimeout(() => {
-                    captureFormData(); // Capture form data when inactivity timeout is reached
-                    Swal.fire({
-                        title: 'Session Timeout',
-                        text: 'You will be logged out in 60 seconds due to inactivity.',
-                        timer: 60000, // 1 minute (60 seconds)
-                        timerProgressBar: true,
-                        confirmButtonText: 'Stay Logged In',
-                        showCancelButton: true,
-                        cancelButtonText: 'Log Out',
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // Reset timer if the user clicks 'Stay Logged In'
-                            resetTimer();
-                        } else {
-                            logout(); // Logout after capturing data
-                        }
-                    });
-                }, 30 * 1000); // Timeout after 30 seconds of inactivity
-            }
-        };
-
-        inactivityTime();
-    </script> -->
 
 <script>
     // Save data to local storage when any input changes

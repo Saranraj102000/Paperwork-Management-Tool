@@ -3,154 +3,165 @@ session_start();
 require 'db.php';
 
 if (!isset($_SESSION['email'])) {
-    header("Location: paperworklogin.php"); // Redirect if not logged in
+    header("Location: paperworklogin.php");
     exit();
 }
-?>
 
-<?php
-// Get logged-in user's email
+// Get logged-in user's email, ID, role, and userwithempid
 $userEmail = $_SESSION['email'] ?? '';
-
-// Query to fetch the user's role from the database
-$roleQuery = "SELECT role FROM users WHERE email = ?";
-$stmt = $conn->prepare($roleQuery);
+$userQuery = "SELECT id, role, userwithempid FROM users WHERE email = ?";
+$stmt = $conn->prepare($userQuery);
 $stmt->bind_param("s", $userEmail);
 $stmt->execute();
-$result = $stmt->get_result();
+$userResult = $stmt->get_result();
+$userData = $userResult->fetch_assoc();
+$userId = $userData['id'];
+$userRole = $userData['role'];
+$userWithEmpId = $userData['userwithempid'];
 
-// Check if the user exists and get their role
-if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $userRole = $row['role']; // Fetch the role of the current user
-} else {
-    // Handle case where user does not exist
-    echo "User not found.";
-    exit; // Stop execution if the user does not exist
-}
+// Determine if the user is an admin
+$isAdmin = ($userRole === 'Admin' || $userRole === 'Contracts');
 
-// Check if the user is an admin
-$isAdmin = ($userRole === 'Admin' || $userRole === 'Contracts'); // Use 'Admin' if that's the exact string in your database
-
-
-// Initialize variables for search, date, submitted by, and status filters
+// Set up filters and pagination
 $search = $_GET['search'] ?? '';
 $startDate = $_GET['start_date'] ?? '';
 $endDate = $_GET['end_date'] ?? '';
 $submittedBy = $_GET['submitted_by'] ?? '';
-$status = $_GET['status'] ?? ''; // New status filter
-
-// Pagination logic
+$status = $_GET['status'] ?? '';
 $recordsPerPage = 10;
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($page - 1) * $recordsPerPage;
 
-// SQL to get filtered record count
-$sqlCount = "SELECT COUNT(*) AS total FROM paperworkdetails WHERE 1";
+// Define the columns to match with userwithempid in paperworkdetails
+$columnsToCheck = [
+    "delivery_manager", "delivery_account_lead", "team_lead",
+    "associate_team_lead", "business_unit", "client_account_lead",
+    "associate_director_delivery", "delivery_manager1", "delivery_account_lead1",
+    "team_lead1", "associate_team_lead1", "recruiter_name"
+];
+$columnConditions = [];
 
-// Initialize arrays to store filter parameters
+if ($userWithEmpId) {
+    foreach ($columnsToCheck as $column) {
+        $columnConditions[] = "$column = ?";
+    }
+}
+
+// Count the total records after filters are applied
+$sqlCount = "SELECT COUNT(*) AS total FROM paperworkdetails WHERE 1";
 $paramsCount = [];
 $bindTypesCount = '';
 
-// Only show own records for non-admin users
-if (!$isAdmin) { // Apply restriction for non-admin users
-    $sqlCount .= " AND submittedby = ?";
-    $paramsCount[] = $userEmail;
-    $bindTypesCount .= 's';
+// For non-admins, apply access control based on userwithempid or email
+if (!$isAdmin) {
+    if ($userWithEmpId) {
+        $sqlCount .= " AND (" . implode(" OR ", $columnConditions) . ")";
+        foreach ($columnConditions as $condition) {
+            $paramsCount[] = $userWithEmpId;
+            $bindTypesCount .= 's';
+        }
+    } else {
+        $sqlCount .= " AND submittedby = ?";
+        $paramsCount[] = $userEmail;
+        $bindTypesCount .= 's';
+    }
 }
 
-// Apply search filter
+// Apply additional filters to count query
 if (!empty($search)) {
     $sqlCount .= " AND (cfirstname LIKE ? OR clastname LIKE ? OR cemail LIKE ? OR id LIKE ?)";
-    $paramsCount[] = "%$search%";
-    $paramsCount[] = "%$search%";
-    $paramsCount[] = "%$search%";
-    $paramsCount[] = "%$search%";
+    $searchParam = "%$search%";
+    $paramsCount = array_merge($paramsCount, [$searchParam, $searchParam, $searchParam, $searchParam]);
     $bindTypesCount .= 'ssss';
 }
 
-// Date range filter
 if (!empty($startDate) && !empty($endDate)) {
     $sqlCount .= " AND DATE(created_at) BETWEEN ? AND ?";
-    $paramsCount[] = $startDate;
-    $paramsCount[] = $endDate;
+    $paramsCount = array_merge($paramsCount, [$startDate, $endDate]);
     $bindTypesCount .= 'ss';
 }
 
-// Submitted by filter
 if (!empty($submittedBy)) {
     $sqlCount .= " AND submittedby LIKE ?";
     $paramsCount[] = "%$submittedBy%";
     $bindTypesCount .= 's';
 }
 
-// Status filter
 if (!empty($status)) {
     $sqlCount .= " AND status = ?";
     $paramsCount[] = $status;
     $bindTypesCount .= 's';
 }
 
-// Prepare the count statement
+// Execute the count query
 $stmtCount = $conn->prepare($sqlCount);
 if (!empty($paramsCount)) {
     $stmtCount->bind_param($bindTypesCount, ...$paramsCount);
 }
 $stmtCount->execute();
-$resultCount = $stmtCount->get_result();
-$totalFilteredRecords = $resultCount->fetch_assoc()['total'];
+$totalFilteredRecords = $stmtCount->get_result()->fetch_assoc()['total'];
 $totalPages = ceil($totalFilteredRecords / $recordsPerPage);
 
-// SQL to get records with pagination
-$sql = "SELECT id, cfirstname, clastname, created_at, submittedby, status 
-        FROM paperworkdetails 
+// Main query for fetching records
+$sql = "SELECT p.*, u.name as submitter_name,
+        CASE 
+            WHEN p.submittedby = ? THEN 'Own Record'
+            ELSE CONCAT('Team Member: ', u.name)
+        END as record_type
+        FROM paperworkdetails p
+        LEFT JOIN users u ON u.email = p.submittedby
         WHERE 1";
 
-// Apply the same filters to the main query
-$params = [];
-$bindTypes = '';
+$params = [$userEmail];
+$bindTypes = 's';
 
-if (!$isAdmin) { // Apply restriction for non-admin users
-    $sql .= " AND submittedby = ?";
-    $params[] = $userEmail;
-    $bindTypes .= 's';
+// Apply filtering based on userwithempid for non-admins
+if (!$isAdmin) {
+    if ($userWithEmpId) {
+        $sql .= " AND (" . implode(" OR ", $columnConditions) . ")";
+        foreach ($columnConditions as $condition) {
+            $params[] = $userWithEmpId;
+            $bindTypes .= 's';
+        }
+    } else {
+        $sql .= " AND p.submittedby = ?";
+        $params[] = $userEmail;
+        $bindTypes .= 's';
+    }
 }
 
+// Apply additional filters
 if (!empty($search)) {
-    $sql .= " AND (cfirstname LIKE ? OR clastname LIKE ? OR cemail LIKE ? OR id LIKE ?)";
-    $params[] = "%$search%";
-    $params[] = "%$search%";
-    $params[] = "%$search%";
-    $params[] = "%$search%";
+    $sql .= " AND (p.cfirstname LIKE ? OR p.clastname LIKE ? OR p.cemail LIKE ? OR p.id LIKE ?)";
+    $searchParam = "%$search%";
+    $params = array_merge($params, [$searchParam, $searchParam, $searchParam, $searchParam]);
     $bindTypes .= 'ssss';
 }
 
 if (!empty($startDate) && !empty($endDate)) {
-    $sql .= " AND DATE(created_at) BETWEEN ? AND ?";
-    $params[] = $startDate;
-    $params[] = $endDate;
+    $sql .= " AND DATE(p.created_at) BETWEEN ? AND ?";
+    $params = array_merge($params, [$startDate, $endDate]);
     $bindTypes .= 'ss';
 }
 
 if (!empty($submittedBy)) {
-    $sql .= " AND submittedby LIKE ?";
+    $sql .= " AND p.submittedby LIKE ?";
     $params[] = "%$submittedBy%";
     $bindTypes .= 's';
 }
 
 if (!empty($status)) {
-    $sql .= " AND status = ?";
+    $sql .= " AND p.status = ?";
     $params[] = $status;
     $bindTypes .= 's';
 }
 
-// Add pagination limit
-$sql .= " ORDER BY created_at DESC LIMIT ? OFFSET ?";
-$params[] = $recordsPerPage;
-$params[] = $offset;
+// Add pagination
+$sql .= " ORDER BY p.created_at DESC LIMIT ? OFFSET ?";
+$params = array_merge($params, [$recordsPerPage, $offset]);
 $bindTypes .= 'ii';
 
-// Prepare the SQL statement
+// Execute main query
 $stmt = $conn->prepare($sql);
 if (!empty($params)) {
     $stmt->bind_param($bindTypes, ...$params);
@@ -158,6 +169,9 @@ if (!empty($params)) {
 $stmt->execute();
 $result = $stmt->get_result();
 ?>
+
+
+
 
 
 <!DOCTYPE html>
